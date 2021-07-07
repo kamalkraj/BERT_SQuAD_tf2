@@ -97,7 +97,7 @@ def train(args, train_dataset, model, tokenizer, config, strategy):
     logger.info("  Total optimization steps = %d", num_train_optimization_steps )
 
     # refer https://www.tensorflow.org/tutorials/distribute/custom_training
-
+    @tf.function
     def train_step(input_ids, attention_mask, token_type_ids, start_positions, end_positions):
         def step_fn(input_ids, attention_mask, token_type_ids, start_positions, end_positions):
             with tf.GradientTape() as tape: 
@@ -380,11 +380,11 @@ def main():
     # Setup GPU & distributed training
     
     if args.multi_gpu:
-        if len(args.gpus.split(',')) == 1:
-            strategy = tf.distribute.MirroredStrategy()
-        else:
-            gpus = [f"/gpu:{gpu}" for gpu in args.gpus.split(',')]
-            strategy = tf.distribute.MirroredStrategy(devices=gpus)
+#         if len(args.gpus.split(',')) == 1:
+#             strategy = tf.distribute.MirroredStrategy()
+#         else:
+#             gpus = [f"/gpu:{gpu}" for gpu in args.gpus.split(',')]
+        strategy = tf.distribute.MirroredStrategy()
     else:
         gpu = args.gpus.split(',')[0]
         strategy = tf.distribute.OneDeviceStrategy(device=f"/gpu:{gpu}")
